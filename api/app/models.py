@@ -81,6 +81,8 @@ class ProjectSettings(Base):
     background_style: Mapped[str | None] = mapped_column(String(50), nullable=True)
     use_shots_for_avatar_iv: Mapped[int] = mapped_column(Integer, default=1)
 
+    project = relationship("Project", back_populates="settings")
+
 
 class SystemSettings(Base):
     __tablename__ = "system_settings"
@@ -97,5 +99,3 @@ class SystemSettings(Base):
     volcengine_token_enc: Mapped[str | None] = mapped_column(Text, nullable=True)
     volcengine_cluster_enc: Mapped[str | None] = mapped_column(Text, nullable=True)
     volcengine_voice_type: Mapped[str | None] = mapped_column(String(100), nullable=True)
-
-    project = relationship("Project", back_populates="settings")
