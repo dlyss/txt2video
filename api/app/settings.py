@@ -4,6 +4,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
+    model_config = {"protected_namespaces": ("model_",)}
     redis_url: str = "redis://localhost:6379/0"
     tts_provider: str = "aliyun"  # aliyun | volcengine | mock
     lip_sync_provider: str = "heygen"
