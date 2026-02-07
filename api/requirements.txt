@@ -1,0 +1,10 @@
+fastapi==0.112.2
+uvicorn==0.30.6
+pydantic==2.8.2
+pydantic-settings==2.4.0
+sqlalchemy==2.0.32
+rq==1.16.2
+redis==5.0.8
+python-multipart==0.0.9
+requests==2.32.3
+aliyun-python-sdk-core==2.13.36
