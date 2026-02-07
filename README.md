@@ -52,3 +52,12 @@ npm run dev
 - 设计文档：`docs/DESIGN_SPEC.md`
 - 使用说明：`docs/USAGE.md`
 - Docker 运行：`docs/DOCKER.md`
+
+## 一键启动
+```bash
+make up
+```
+或：
+```bash
+./run.sh
+```

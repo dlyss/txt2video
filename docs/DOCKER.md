@@ -28,6 +28,10 @@ HEYGEN_AVATAR_ID=
 docker compose up --build
 ```
 
+也可以使用快捷命令：
+- `make up`
+- `./run.sh`
+
 访问：
 - 前端：http://localhost:3000
 - 后端：http://localhost:8000
@@ -37,4 +41,3 @@ docker compose up --build
 ## 3. 常见问题
 - 修改代码后自动生效：compose 已挂载本地目录（`volumes`）。
 - 数据库位置：`api/app/storage/app.db`（会落在本地目录）。
-
