@@ -47,6 +47,9 @@ npm run dev
 3) （可选）配置 HeyGen 角色/音色/Avatar IV 图片
 4) 触发渲染 → `/render/[id]` 查看进度与预览
 
+## 系统配置
+访问 `/settings` 可选择 TTS 提供方（阿里云/火山引擎/Mock）并启用 HeyGen/Avatar IV。
+
 ## 文档
 - 开发文档：`docs/DEV_SPEC.md`
 - 设计文档：`docs/DESIGN_SPEC.md`

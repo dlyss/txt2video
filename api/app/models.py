@@ -81,4 +81,13 @@ class ProjectSettings(Base):
     background_style: Mapped[str | None] = mapped_column(String(50), nullable=True)
     use_shots_for_avatar_iv: Mapped[int] = mapped_column(Integer, default=1)
 
+
+class SystemSettings(Base):
+    __tablename__ = "system_settings"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    tts_provider: Mapped[str] = mapped_column(String(50), default="aliyun")
+    enable_heygen: Mapped[int] = mapped_column(Integer, default=1)
+    enable_avatar_iv: Mapped[int] = mapped_column(Integer, default=1)
+
     project = relationship("Project", back_populates="settings")

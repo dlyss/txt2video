@@ -177,6 +177,7 @@ graph TD
 graph TD
   Root[txt2video]
   Root --> Home[首页 /]
+  Root --> Settings[设置 /settings]
   Root --> Project[项目页 /project/[id]]
   Root --> Render[渲染页 /render/[id]]
 
@@ -202,4 +203,3 @@ graph TD
   Render --> R4[视频预览]
   Render --> R5[下载链接]
 ```
-

@@ -16,6 +16,12 @@ cp api/.env.example api/.env
 - `ALIYUN_ACCESS_KEY_SECRET`
 - `ALIYUN_APPKEY`
 
+若使用火山引擎 TTS：
+- `VOLCENGINE_APP_ID`
+- `VOLCENGINE_TOKEN`
+- `VOLCENGINE_CLUSTER`
+- `VOLCENGINE_VOICE_TYPE`
+
 若启用 HeyGen（Avatar IV / 口型）：
 - `HEYGEN_API_KEY`
 - `PUBLIC_BASE_URL`（必须是公网可访问域名，不能是 localhost）
@@ -69,10 +75,13 @@ npm run dev
 9) 点击「开始生成」
 10) 进入 `/render/[id]` 查看进度与预览视频
 
+配置页：
+- 访问 `/settings` 选择 TTS 提供方（阿里云/火山引擎/Mock）与启用 HeyGen/Avatar IV
+
 ---
 
 ## 4. 注意事项
 - 如果变更了数据库结构，需删除旧 `api/app/storage/app.db` 或自行迁移
 - Avatar IV 生成需 HeyGen API Key + voice_id + image_key
 - HeyGen 口型需要公网可访问的 `PUBLIC_BASE_URL`
-
+- 新增系统配置（/settings）会创建 `system_settings` 表

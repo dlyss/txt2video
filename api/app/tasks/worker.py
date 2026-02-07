@@ -5,7 +5,7 @@ import json
 from sqlalchemy.orm import Session
 
 from ..db import SessionLocal
-from ..models import Render, Dialogue, ProjectSettings, Shot
+from ..models import Render, Dialogue, ProjectSettings, Shot, SystemSettings
 from ..services.tts import synthesize_dialogues
 from ..services.audio import concat_wavs
 from ..services.subtitles import write_srt
@@ -44,7 +44,9 @@ def render_job(render_id: int) -> None:
         write_status({"phase": "tts", "progress": render.progress})
 
         dialogue_dicts = [{"speaker": d.speaker, "text": d.text} for d in dialogues]
-        tts_results = synthesize_dialogues(dialogue_dicts, output_dir / "tts")
+        system_row = db.query(SystemSettings).first()
+        provider = system_row.tts_provider if system_row else settings.tts_provider
+        tts_results = synthesize_dialogues(dialogue_dicts, output_dir / "tts", provider=provider)
 
         render.progress = 45
         db.commit()
@@ -78,7 +80,17 @@ def render_job(render_id: int) -> None:
         }
         bg_color = bg_color_map.get((settings_row.background_style if settings_row else None) or "paper", "#f4f1ea")
 
-        if settings_row and settings_row.avatar_iv_image_key and settings_row.voice_id and settings.heygen_api_key:
+        enable_heygen = bool(system_row.enable_heygen) if system_row else True
+        enable_avatar_iv = bool(system_row.enable_avatar_iv) if system_row else True
+
+        if (
+            enable_heygen
+            and enable_avatar_iv
+            and settings_row
+            and settings_row.avatar_iv_image_key
+            and settings_row.voice_id
+            and settings.heygen_api_key
+        ):
             try:
                 clips_dir = output_dir / "iv_clips"
                 clips_dir.mkdir(parents=True, exist_ok=True)
@@ -127,7 +139,8 @@ def render_job(render_id: int) -> None:
 
         if not heygen_ok:
             if (
-                settings.lip_sync_provider == "heygen"
+                enable_heygen
+                and settings.lip_sync_provider == "heygen"
                 and settings.heygen_api_key
                 and (settings_row and settings_row.avatar_id)
                 and "localhost" not in settings.public_base_url

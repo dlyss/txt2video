@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .db import init_db
-from .routers import projects, renders, assets, heygen
+from .routers import projects, renders, assets, heygen, system
 
 
 def create_app() -> FastAPI:
@@ -23,6 +23,7 @@ def create_app() -> FastAPI:
     app.include_router(renders.router)
     app.include_router(assets.router)
     app.include_router(heygen.router)
+    app.include_router(system.router)
 
     return app
 

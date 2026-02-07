@@ -21,6 +21,10 @@ services:
       PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:8000}
       HEYGEN_API_KEY: ${HEYGEN_API_KEY:-}
       HEYGEN_AVATAR_ID: ${HEYGEN_AVATAR_ID:-}
+      VOLCENGINE_APP_ID: ${VOLCENGINE_APP_ID:-}
+      VOLCENGINE_TOKEN: ${VOLCENGINE_TOKEN:-}
+      VOLCENGINE_CLUSTER: ${VOLCENGINE_CLUSTER:-}
+      VOLCENGINE_VOICE_TYPE: ${VOLCENGINE_VOICE_TYPE:-BV001_streaming}
     volumes:
       - ./api:/app/api
       - ./api/app/storage:/app/api/app/storage
@@ -45,6 +49,10 @@ services:
       PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:8000}
       HEYGEN_API_KEY: ${HEYGEN_API_KEY:-}
       HEYGEN_AVATAR_ID: ${HEYGEN_AVATAR_ID:-}
+      VOLCENGINE_APP_ID: ${VOLCENGINE_APP_ID:-}
+      VOLCENGINE_TOKEN: ${VOLCENGINE_TOKEN:-}
+      VOLCENGINE_CLUSTER: ${VOLCENGINE_CLUSTER:-}
+      VOLCENGINE_VOICE_TYPE: ${VOLCENGINE_VOICE_TYPE:-BV001_streaming}
     volumes:
       - ./api:/app/api
       - ./api/app/storage:/app/api/app/storage
@@ -64,4 +72,3 @@ services:
       - "3000:3000"
     depends_on:
       - api
-

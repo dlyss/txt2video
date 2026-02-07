@@ -66,3 +66,15 @@ class ProjectSettingsUpdate(BaseModel):
     avatar_iv_image_key: Optional[str] = None
     background_style: Optional[str] = None
     use_shots_for_avatar_iv: Optional[bool] = None
+
+
+class SystemSettingsOut(BaseModel):
+    tts_provider: str
+    enable_heygen: bool
+    enable_avatar_iv: bool
+
+
+class SystemSettingsUpdate(BaseModel):
+    tts_provider: Optional[str] = None
+    enable_heygen: Optional[bool] = None
+    enable_avatar_iv: Optional[bool] = None

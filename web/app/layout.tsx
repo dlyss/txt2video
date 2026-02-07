@@ -17,6 +17,10 @@ export default function RootLayout({
         <div className="container">
           <header className="header">
             <h1>txt2video MVP</h1>
+            <nav>
+              <a href="/" style={{ marginRight: 12 }}>首页</a>
+              <a href="/settings">设置</a>
+            </nav>
           </header>
           {children}
         </div>

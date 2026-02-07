@@ -228,6 +228,10 @@ HEYGEN_AVATAR_ID=你的avatar_id
 ### 7.12 Avatar IV 上传照片（生成 image_key）
 `POST /api/projects/{id}/avatar-iv/upload`
 
+### 7.13 系统配置
+`GET /api/settings`  
+`PUT /api/settings`
+
 ---
 
 ## 8. API 快速联调（curl 示例）

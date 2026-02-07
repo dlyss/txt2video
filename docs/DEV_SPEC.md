@@ -89,6 +89,7 @@ npm run dev
 - shots(id, project_id, shot_index, description, duration_sec)
 - renders(id, project_id, status, progress, output_video_path, created_at)
 - project_settings(id, project_id, avatar_id, voice_id, avatar_image_path, avatar_iv_image_key, background_style, use_shots_for_avatar_iv)
+- system_settings(id, tts_provider, enable_heygen, enable_avatar_iv)
 
 备注：
 - SQLite 文件存放：`api/app/storage/app.db`
@@ -371,6 +372,18 @@ npm run dev
 { "data": [ { "voice_id": "...", "name": "..." } ] }
 ```
 
+### 13.16 系统设置
+- `GET /api/settings`
+- `PUT /api/settings`
+```json
+{ "tts_provider": "aliyun", "enable_heygen": true, "enable_avatar_iv": true }
+```
+
+### 13.17 TTS Provider 约定
+- `aliyun`：阿里云语音合成
+- `volcengine`：火山引擎语音合成
+- `mock`：静音占位
+
 ---
 
 ## 14. 错误码与失败场景
@@ -449,4 +462,3 @@ sequenceDiagram
 ```json
 { "phase": "string", "current": 0, "total": 0, "progress": 0 }
 ```
-
