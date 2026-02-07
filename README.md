@@ -51,4 +51,4 @@ npm run dev
 - 开发文档：`docs/DEV_SPEC.md`
 - 设计文档：`docs/DESIGN_SPEC.md`
 - 使用说明：`docs/USAGE.md`
-
+- Docker 运行：`docs/DOCKER.md`

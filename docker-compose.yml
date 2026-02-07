@@ -1,0 +1,67 @@
+version: "3.9"
+
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      TTS_PROVIDER: ${TTS_PROVIDER:-aliyun}
+      ALIYUN_ACCESS_KEY_ID: ${ALIYUN_ACCESS_KEY_ID:-}
+      ALIYUN_ACCESS_KEY_SECRET: ${ALIYUN_ACCESS_KEY_SECRET:-}
+      ALIYUN_APPKEY: ${ALIYUN_APPKEY:-}
+      ALIYUN_REGION: ${ALIYUN_REGION:-ap-southeast-1}
+      LIP_SYNC_PROVIDER: ${LIP_SYNC_PROVIDER:-heygen}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:8000}
+      HEYGEN_API_KEY: ${HEYGEN_API_KEY:-}
+      HEYGEN_AVATAR_ID: ${HEYGEN_AVATAR_ID:-}
+    volumes:
+      - ./api:/app/api
+      - ./api/app/storage:/app/api/app/storage
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    command: ["python", "-m", "rq", "worker", "txt2video"]
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      TTS_PROVIDER: ${TTS_PROVIDER:-aliyun}
+      ALIYUN_ACCESS_KEY_ID: ${ALIYUN_ACCESS_KEY_ID:-}
+      ALIYUN_ACCESS_KEY_SECRET: ${ALIYUN_ACCESS_KEY_SECRET:-}
+      ALIYUN_APPKEY: ${ALIYUN_APPKEY:-}
+      ALIYUN_REGION: ${ALIYUN_REGION:-ap-southeast-1}
+      LIP_SYNC_PROVIDER: ${LIP_SYNC_PROVIDER:-heygen}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:8000}
+      HEYGEN_API_KEY: ${HEYGEN_API_KEY:-}
+      HEYGEN_AVATAR_ID: ${HEYGEN_AVATAR_ID:-}
+    volumes:
+      - ./api:/app/api
+      - ./api/app/storage:/app/api/app/storage
+    depends_on:
+      - redis
+      - api
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    environment:
+      NEXT_PUBLIC_API_BASE: http://localhost:8000
+    volumes:
+      - ./web:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
