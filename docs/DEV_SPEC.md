@@ -90,6 +90,10 @@ npm run dev
 - renders(id, project_id, status, progress, output_video_path, created_at)
 - project_settings(id, project_id, avatar_id, voice_id, avatar_image_path, avatar_iv_image_key, background_style, use_shots_for_avatar_iv)
 - system_settings(id, tts_provider, enable_heygen, enable_avatar_iv)
+  - + encrypted keys: aliyun_access_key_id_enc, aliyun_access_key_secret_enc, aliyun_appkey_enc
+  - + encrypted keys: heygen_api_key_enc
+  - + encrypted keys: volcengine_app_id_enc, volcengine_token_enc, volcengine_cluster_enc
+  - + volcengine_voice_type
 
 备注：
 - SQLite 文件存放：`api/app/storage/app.db`
@@ -383,6 +387,10 @@ npm run dev
 - `aliyun`：阿里云语音合成
 - `volcengine`：火山引擎语音合成
 - `mock`：静音占位
+
+### 13.18 配置测试接口
+- `POST /api/settings/test/tts`
+- `POST /api/settings/test/heygen`
 
 ---
 

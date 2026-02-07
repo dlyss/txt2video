@@ -89,5 +89,13 @@ class SystemSettings(Base):
     tts_provider: Mapped[str] = mapped_column(String(50), default="aliyun")
     enable_heygen: Mapped[int] = mapped_column(Integer, default=1)
     enable_avatar_iv: Mapped[int] = mapped_column(Integer, default=1)
+    aliyun_access_key_id_enc: Mapped[str | None] = mapped_column(Text, nullable=True)
+    aliyun_access_key_secret_enc: Mapped[str | None] = mapped_column(Text, nullable=True)
+    aliyun_appkey_enc: Mapped[str | None] = mapped_column(Text, nullable=True)
+    heygen_api_key_enc: Mapped[str | None] = mapped_column(Text, nullable=True)
+    volcengine_app_id_enc: Mapped[str | None] = mapped_column(Text, nullable=True)
+    volcengine_token_enc: Mapped[str | None] = mapped_column(Text, nullable=True)
+    volcengine_cluster_enc: Mapped[str | None] = mapped_column(Text, nullable=True)
+    volcengine_voice_type: Mapped[str | None] = mapped_column(String(100), nullable=True)
 
     project = relationship("Project", back_populates="settings")

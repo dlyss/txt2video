@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     volcengine_token: str = ""
     volcengine_cluster: str = ""
     volcengine_voice_type: str = "BV001_streaming"
+    settings_secret_key: str = "dev-secret"
 
 
 settings = Settings()

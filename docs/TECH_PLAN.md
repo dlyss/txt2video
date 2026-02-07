@@ -231,6 +231,8 @@ HEYGEN_AVATAR_ID=你的avatar_id
 ### 7.13 系统配置
 `GET /api/settings`  
 `PUT /api/settings`
+`POST /api/settings/test/tts`  
+`POST /api/settings/test/heygen`
 
 ---
 

@@ -22,16 +22,18 @@ class TTSLineResult:
 _token_cache = {"token": "", "expire_at": 0.0}
 
 
-def _get_aliyun_token() -> str:
+def _get_aliyun_token(access_key_id: str | None = None, access_key_secret: str | None = None) -> str:
     if _token_cache["token"] and _token_cache["expire_at"] > time.time() + 60:
         return _token_cache["token"]
 
-    if not settings.aliyun_access_key_id or not settings.aliyun_access_key_secret:
+    access_key_id = access_key_id or settings.aliyun_access_key_id
+    access_key_secret = access_key_secret or settings.aliyun_access_key_secret
+    if not access_key_id or not access_key_secret:
         return ""
 
     client = AcsClient(
-        settings.aliyun_access_key_id,
-        settings.aliyun_access_key_secret,
+        access_key_id,
+        access_key_secret,
         settings.aliyun_region,
     )
     request = CommonRequest()
@@ -50,14 +52,17 @@ def _get_aliyun_token() -> str:
     return token
 
 
-def _aliyun_tts(text: str, output_path: Path) -> float:
-    token = _get_aliyun_token()
-    if not token or not settings.aliyun_appkey:
+def _aliyun_tts(text: str, output_path: Path, config: dict | None = None) -> float:
+    access_key_id = (config or {}).get("aliyun_access_key_id") or settings.aliyun_access_key_id
+    access_key_secret = (config or {}).get("aliyun_access_key_secret") or settings.aliyun_access_key_secret
+    token = _get_aliyun_token(access_key_id, access_key_secret)
+    appkey = (config or {}).get("aliyun_appkey") or settings.aliyun_appkey
+    if not token or not appkey:
         raise RuntimeError("Aliyun TTS not configured")
 
     url = "https://nls-gateway.cn-shanghai.aliyuncs.com/stream/v1/tts"
     payload = {
-        "appkey": settings.aliyun_appkey,
+        "appkey": appkey,
         "token": token,
         "text": text,
         "format": "wav",
@@ -75,20 +80,24 @@ def _aliyun_tts(text: str, output_path: Path) -> float:
     return wav_duration(output_path)
 
 
-def _volcengine_tts(text: str, output_path: Path) -> float:
-    if not settings.volcengine_app_id or not settings.volcengine_token or not settings.volcengine_cluster:
+def _volcengine_tts(text: str, output_path: Path, config: dict | None = None) -> float:
+    app_id = (config or {}).get("volcengine_app_id") or settings.volcengine_app_id
+    token = (config or {}).get("volcengine_token") or settings.volcengine_token
+    cluster = (config or {}).get("volcengine_cluster") or settings.volcengine_cluster
+    voice_type = (config or {}).get("volcengine_voice_type") or settings.volcengine_voice_type
+    if not app_id or not token or not cluster:
         raise RuntimeError("Volcengine TTS not configured")
 
     url = "https://openspeech.bytedance.com/api/v1/tts"
     payload = {
         "app": {
-            "appid": settings.volcengine_app_id,
-            "token": settings.volcengine_token,
-            "cluster": settings.volcengine_cluster,
+            "appid": app_id,
+            "token": token,
+            "cluster": cluster,
         },
         "user": {"uid": "txt2video"},
         "audio": {
-            "voice_type": settings.volcengine_voice_type,
+            "voice_type": voice_type,
             "encoding": "wav",
             "speed_ratio": 1.0,
             "volume_ratio": 1.0,
@@ -96,7 +105,7 @@ def _volcengine_tts(text: str, output_path: Path) -> float:
         },
         "request": {"text": text, "reqid": str(int(time.time() * 1000)), "text_type": "plain"},
     }
-    headers = {"Authorization": f"Bearer; {settings.volcengine_token}", "Content-Type": "application/json"}
+    headers = {"Authorization": f"Bearer; {token}", "Content-Type": "application/json"}
     resp = requests.post(url, headers=headers, data=json.dumps(payload), timeout=30)
     if resp.status_code != 200:
         raise RuntimeError(f"Volcengine TTS failed: {resp.text}")
@@ -117,6 +126,7 @@ def synthesize_dialogues(
     dialogues: List[dict],
     output_dir: Path,
     provider: str | None = None,
+    config: dict | None = None,
 ) -> List[TTSLineResult]:
     output_dir.mkdir(parents=True, exist_ok=True)
     results: List[TTSLineResult] = []
@@ -127,9 +137,9 @@ def synthesize_dialogues(
         out_path = output_dir / f"line_{idx:03d}.wav"
         try:
             if use_provider == "aliyun":
-                duration = _aliyun_tts(text, out_path)
+                duration = _aliyun_tts(text, out_path, config=config)
             elif use_provider == "volcengine":
-                duration = _volcengine_tts(text, out_path)
+                duration = _volcengine_tts(text, out_path, config=config)
             else:
                 duration = estimate_duration(text)
                 write_silence_wav(out_path, duration)

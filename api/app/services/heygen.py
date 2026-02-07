@@ -15,8 +15,9 @@ HEYGEN_AVATAR_IV_URL = "https://api.heygen.com/v2/video/av4/generate"
 HEYGEN_UPLOAD_URL = "https://upload.heygen.com/v1/asset"
 
 
-def create_video(audio_url: str, avatar_id: str) -> str:
-    if not settings.heygen_api_key or not avatar_id:
+def create_video(audio_url: str, avatar_id: str, api_key: str | None = None) -> str:
+    api_key = api_key or settings.heygen_api_key
+    if not api_key or not avatar_id:
         raise RuntimeError("HeyGen not configured")
 
     payload = {
@@ -28,7 +29,7 @@ def create_video(audio_url: str, avatar_id: str) -> str:
         ],
         "dimension": {"width": 1280, "height": 720},
     }
-    headers = {"X-Api-Key": settings.heygen_api_key, "Content-Type": "application/json"}
+    headers = {"X-Api-Key": api_key, "Content-Type": "application/json"}
     resp = requests.post(HEYGEN_GENERATE_URL, json=payload, headers=headers, timeout=30)
     if resp.status_code != 200:
         raise RuntimeError(f"HeyGen create failed: {resp.text}")
@@ -39,8 +40,9 @@ def create_video(audio_url: str, avatar_id: str) -> str:
     return video_id
 
 
-def wait_for_video(video_id: str, timeout_sec: int = 600) -> str:
-    headers = {"X-Api-Key": settings.heygen_api_key}
+def wait_for_video(video_id: str, timeout_sec: int = 600, api_key: str | None = None) -> str:
+    api_key = api_key or settings.heygen_api_key
+    headers = {"X-Api-Key": api_key}
     start = time.time()
     while time.time() - start < timeout_sec:
         resp = requests.get(HEYGEN_STATUS_URL, params={"video_id": video_id}, headers=headers, timeout=15)
@@ -67,10 +69,11 @@ def download_video(video_url: str, output_path: Path) -> None:
     output_path.write_bytes(resp.content)
 
 
-def list_avatars() -> list[dict]:
-    if not settings.heygen_api_key:
+def list_avatars(api_key: str | None = None) -> list[dict]:
+    api_key = api_key or settings.heygen_api_key
+    if not api_key:
         raise RuntimeError("HeyGen API key missing")
-    headers = {"X-Api-Key": settings.heygen_api_key}
+    headers = {"X-Api-Key": api_key}
     resp = requests.get(HEYGEN_AVATARS_URL, headers=headers, timeout=20)
     if resp.status_code != 200:
         raise RuntimeError(f"HeyGen avatars failed: {resp.text}")
@@ -78,10 +81,11 @@ def list_avatars() -> list[dict]:
     return data
 
 
-def list_voices() -> list[dict]:
-    if not settings.heygen_api_key:
+def list_voices(api_key: str | None = None) -> list[dict]:
+    api_key = api_key or settings.heygen_api_key
+    if not api_key:
         raise RuntimeError("HeyGen API key missing")
-    headers = {"X-Api-Key": settings.heygen_api_key}
+    headers = {"X-Api-Key": api_key}
     resp = requests.get(HEYGEN_VOICES_URL, headers=headers, timeout=20)
     if resp.status_code != 200:
         raise RuntimeError(f"HeyGen voices failed: {resp.text}")
@@ -89,15 +93,16 @@ def list_voices() -> list[dict]:
     return data
 
 
-def upload_asset(filename: str, content: bytes, content_type: str) -> str:
-    if not settings.heygen_api_key:
+def upload_asset(filename: str, content: bytes, content_type: str, api_key: str | None = None) -> str:
+    api_key = api_key or settings.heygen_api_key
+    if not api_key:
         raise RuntimeError("HeyGen API key missing")
-    headers = {"X-Api-Key": settings.heygen_api_key}
+    headers = {"X-Api-Key": api_key}
     files = {"file": (filename, content, content_type)}
     resp = requests.post(HEYGEN_UPLOAD_URL, headers=headers, files=files, timeout=60)
     if resp.status_code != 200:
         # Fallback: some endpoints accept raw body
-        headers_raw = {"X-Api-Key": settings.heygen_api_key, "Content-Type": content_type}
+        headers_raw = {"X-Api-Key": api_key, "Content-Type": content_type}
         resp = requests.post(HEYGEN_UPLOAD_URL, headers=headers_raw, data=content, timeout=60)
     if resp.status_code != 200:
         raise RuntimeError(f"HeyGen upload failed: {resp.text}")
@@ -113,8 +118,9 @@ def upload_asset(filename: str, content: bytes, content_type: str) -> str:
     return key
 
 
-def create_avatar_iv_video(image_key: str, script: str, voice_id: str, title: str | None = None) -> str:
-    if not settings.heygen_api_key:
+def create_avatar_iv_video(image_key: str, script: str, voice_id: str, title: str | None = None, api_key: str | None = None) -> str:
+    api_key = api_key or settings.heygen_api_key
+    if not api_key:
         raise RuntimeError("HeyGen API key missing")
     payload = {
         "title": title or "avatar-iv-video",
@@ -123,7 +129,7 @@ def create_avatar_iv_video(image_key: str, script: str, voice_id: str, title: st
         "voice_id": voice_id,
         "aspect_ratio": "16:9",
     }
-    headers = {"X-Api-Key": settings.heygen_api_key, "Content-Type": "application/json"}
+    headers = {"X-Api-Key": api_key, "Content-Type": "application/json"}
     resp = requests.post(HEYGEN_AVATAR_IV_URL, json=payload, headers=headers, timeout=30)
     if resp.status_code != 200:
         raise RuntimeError(f"HeyGen avatar-iv failed: {resp.text}")

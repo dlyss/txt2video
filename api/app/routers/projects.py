@@ -21,6 +21,8 @@ from ..schemas import (
 )
 from ..services.parser import parse_script
 from ..services.heygen import upload_asset
+from ..services.crypto import decrypt
+from ..models import SystemSettings
 from ..services.storyboard import generate_storyboard
 from ..tasks.queue import enqueue_render
 
@@ -232,7 +234,9 @@ def upload_avatar_iv_image(project_id: int, file: UploadFile = File(...), db: Se
         db.add(settings)
 
     content = file.file.read()
-    image_key = upload_asset(file.filename, content, file.content_type or "image/jpeg")
+    system_row = db.query(SystemSettings).first()
+    api_key = decrypt(system_row.heygen_api_key_enc or "") if system_row else ""
+    image_key = upload_asset(file.filename, content, file.content_type or "image/jpeg", api_key=api_key or None)
     settings.avatar_iv_image_key = image_key
 
     suffix = Path(file.filename).suffix or ".png"

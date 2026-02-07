@@ -22,6 +22,9 @@ cp api/.env.example api/.env
 - `VOLCENGINE_CLUSTER`
 - `VOLCENGINE_VOICE_TYPE`
 
+加密存储密钥：
+- `SETTINGS_SECRET_KEY`（用于加密系统设置中的 API Key）
+
 若启用 HeyGen（Avatar IV / 口型）：
 - `HEYGEN_API_KEY`
 - `PUBLIC_BASE_URL`（必须是公网可访问域名，不能是 localhost）

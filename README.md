@@ -49,6 +49,7 @@ npm run dev
 
 ## 系统配置
 访问 `/settings` 可选择 TTS 提供方（阿里云/火山引擎/Mock）并启用 HeyGen/Avatar IV。
+支持在配置页直接测试 TTS/HeyGen，并加密保存 API Key。
 
 ## 文档
 - 开发文档：`docs/DEV_SPEC.md`

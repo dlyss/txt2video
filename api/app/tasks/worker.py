@@ -12,6 +12,7 @@ from ..services.subtitles import write_srt
 from .compose import compose_video, concat_videos, burn_subtitles
 from ..services.heygen import create_video, wait_for_video, download_video, create_avatar_iv_video
 from ..settings import settings
+from ..services.crypto import decrypt
 
 
 def render_job(render_id: int) -> None:
@@ -46,7 +47,16 @@ def render_job(render_id: int) -> None:
         dialogue_dicts = [{"speaker": d.speaker, "text": d.text} for d in dialogues]
         system_row = db.query(SystemSettings).first()
         provider = system_row.tts_provider if system_row else settings.tts_provider
-        tts_results = synthesize_dialogues(dialogue_dicts, output_dir / "tts", provider=provider)
+        config = {
+            "aliyun_access_key_id": decrypt(system_row.aliyun_access_key_id_enc or "") if system_row else "",
+            "aliyun_access_key_secret": decrypt(system_row.aliyun_access_key_secret_enc or "") if system_row else "",
+            "aliyun_appkey": decrypt(system_row.aliyun_appkey_enc or "") if system_row else "",
+            "volcengine_app_id": decrypt(system_row.volcengine_app_id_enc or "") if system_row else "",
+            "volcengine_token": decrypt(system_row.volcengine_token_enc or "") if system_row else "",
+            "volcengine_cluster": decrypt(system_row.volcengine_cluster_enc or "") if system_row else "",
+            "volcengine_voice_type": system_row.volcengine_voice_type if system_row else "",
+        }
+        tts_results = synthesize_dialogues(dialogue_dicts, output_dir / "tts", provider=provider, config=config)
 
         render.progress = 45
         db.commit()
@@ -83,13 +93,15 @@ def render_job(render_id: int) -> None:
         enable_heygen = bool(system_row.enable_heygen) if system_row else True
         enable_avatar_iv = bool(system_row.enable_avatar_iv) if system_row else True
 
+        heygen_api_key = decrypt(system_row.heygen_api_key_enc or "") if system_row else ""
+
         if (
             enable_heygen
             and enable_avatar_iv
             and settings_row
             and settings_row.avatar_iv_image_key
             and settings_row.voice_id
-            and settings.heygen_api_key
+            and (heygen_api_key or settings.heygen_api_key)
         ):
             try:
                 clips_dir = output_dir / "iv_clips"
@@ -116,6 +128,7 @@ def render_job(render_id: int) -> None:
                         text,
                         settings_row.voice_id,
                         f"p{render.project_id}-r{render_id}-c{idx}",
+                        api_key=heygen_api_key or None,
                     )
                     video_url = wait_for_video(video_id)
                     clip_path = clips_dir / f"clip_{idx:03d}.mp4"
@@ -141,15 +154,15 @@ def render_job(render_id: int) -> None:
             if (
                 enable_heygen
                 and settings.lip_sync_provider == "heygen"
-                and settings.heygen_api_key
+                and (heygen_api_key or settings.heygen_api_key)
                 and (settings_row and settings_row.avatar_id)
                 and "localhost" not in settings.public_base_url
                 and "127.0.0.1" not in settings.public_base_url
             ):
                 try:
                     audio_url = f"{settings.public_base_url}/api/assets/audio/{render_id}/merged.wav"
-                    video_id = create_video(audio_url, settings_row.avatar_id)
-                    video_url = wait_for_video(video_id)
+                    video_id = create_video(audio_url, settings_row.avatar_id, api_key=heygen_api_key or None)
+                    video_url = wait_for_video(video_id, api_key=heygen_api_key or None)
                     download_video(video_url, output_path)
                     heygen_ok = True
                 except Exception:

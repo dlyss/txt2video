@@ -25,6 +25,7 @@ services:
       VOLCENGINE_TOKEN: ${VOLCENGINE_TOKEN:-}
       VOLCENGINE_CLUSTER: ${VOLCENGINE_CLUSTER:-}
       VOLCENGINE_VOICE_TYPE: ${VOLCENGINE_VOICE_TYPE:-BV001_streaming}
+      SETTINGS_SECRET_KEY: ${SETTINGS_SECRET_KEY:-dev-secret}
     volumes:
       - ./api:/app/api
       - ./api/app/storage:/app/api/app/storage
@@ -53,6 +54,7 @@ services:
       VOLCENGINE_TOKEN: ${VOLCENGINE_TOKEN:-}
       VOLCENGINE_CLUSTER: ${VOLCENGINE_CLUSTER:-}
       VOLCENGINE_VOICE_TYPE: ${VOLCENGINE_VOICE_TYPE:-BV001_streaming}
+      SETTINGS_SECRET_KEY: ${SETTINGS_SECRET_KEY:-dev-secret}
     volumes:
       - ./api:/app/api
       - ./api/app/storage:/app/api/app/storage

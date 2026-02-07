@@ -72,9 +72,25 @@ class SystemSettingsOut(BaseModel):
     tts_provider: str
     enable_heygen: bool
     enable_avatar_iv: bool
+    aliyun_access_key_id_masked: Optional[str] = None
+    aliyun_access_key_secret_masked: Optional[str] = None
+    aliyun_appkey_masked: Optional[str] = None
+    heygen_api_key_masked: Optional[str] = None
+    volcengine_app_id_masked: Optional[str] = None
+    volcengine_token_masked: Optional[str] = None
+    volcengine_cluster: Optional[str] = None
+    volcengine_voice_type: Optional[str] = None
 
 
 class SystemSettingsUpdate(BaseModel):
     tts_provider: Optional[str] = None
     enable_heygen: Optional[bool] = None
     enable_avatar_iv: Optional[bool] = None
+    aliyun_access_key_id: Optional[str] = None
+    aliyun_access_key_secret: Optional[str] = None
+    aliyun_appkey: Optional[str] = None
+    heygen_api_key: Optional[str] = None
+    volcengine_app_id: Optional[str] = None
+    volcengine_token: Optional[str] = None
+    volcengine_cluster: Optional[str] = None
+    volcengine_voice_type: Optional[str] = None
